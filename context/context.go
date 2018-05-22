@@ -19,11 +19,6 @@ type DatabaseConnectionSt struct {
 
 //Initialize intitializes database information to make it easy to use later.
 func (db *DatabaseConnectionSt) Initialize() error {
-	os.Setenv("DB_USER", "jesse")
-	os.Setenv("DB_HOST", "127.0.0.1:3306")
-	os.Setenv("DB_PASSWORD", "Password1!")
-	os.Setenv("DB_NAME", "sys")
-
 	dbUser := os.Getenv("DB_USER")
 	dbHost := os.Getenv("DB_HOST")
 	dbPassword := os.Getenv("DB_PASSWORD")
