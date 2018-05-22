@@ -54,7 +54,7 @@ func Create(ctxt *context.Context, w web.ResponseWriter, r *web.Request) {
 		}
 	}
 
-	if !invalidStatus {
+	if invalidStatus {
 		response.UnprocessableEntity(w, "The provided status is not supported")
 		return
 	}
@@ -65,7 +65,7 @@ func Create(ctxt *context.Context, w web.ResponseWriter, r *web.Request) {
 		response.InternalServerError(w, err)
 		return
 	}
-	response.OK(w, newTodo)
+	response.OK(w, *newTodo)
 }
 
 // Update will allow a user to create a new todo
@@ -103,18 +103,18 @@ func Update(ctxt *context.Context, w web.ResponseWriter, r *web.Request) {
 		}
 	}
 
-	if !invalidStatus {
+	if invalidStatus {
 		response.UnprocessableEntity(w, "The provided status is not supported")
 		return
 	}
 
-	newStatus, err := update(db, todoID, todo)
+	updatedTodo, err := update(db, todoID, todo)
 	if err != nil {
 		//return error
 		response.InternalServerError(w, err)
 		return
 	}
-	response.OK(w, newStatus)
+	response.OK(w, *updatedTodo)
 }
 
 // List will provide a list of all current to-dos

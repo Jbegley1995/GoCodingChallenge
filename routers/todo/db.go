@@ -62,34 +62,30 @@ func get(db *sql.DB, todoID int) (*Todo, error) {
 
 //create creates a todo in the database
 func create(db *sql.DB, todo CreateTodo) (*Todo, error) {
-	var (
-		todoID int
-	)
-
-	insertStmt := fmt.Sprintf(`INSERT INTO todo (title, status) VALUES ('%s', '%s') RETURNING id`, todo.Title, todo.Status)
+	insertStmt := fmt.Sprintf(`INSERT INTO todo (title, status) VALUES ('%s', '%s');`, todo.Title, todo.Status)
 
 	// Insert and get back newly created todo ID
-	if err := db.QueryRow(insertStmt).Scan(&todoID); err != nil {
+	res, err := db.Exec(insertStmt)
+	if err != nil {
 		return nil, fmt.Errorf("Failed to save to db: %s", err.Error())
 	}
+	lastInsertID, err := res.LastInsertId()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get inserted ID from the db: %s", err.Error())
+	}
 
-	fmt.Printf("Todo Created -- ID: %d\n", todoID)
+	fmt.Printf("Todo Created -- ID: %d\n", lastInsertID)
 
-	return get(db, todoID)
+	return get(db, int(lastInsertID))
 }
 
 //update updates the todo based with the same id, and returns the todo's state back to the user.
-func update(db *sql.DB, todoID int, todo CreateTodo) (state string, _ error) {
-	updateStmt := fmt.Sprintf(`UPDATE todo SET title = ? AND status = ? WHERE id = ?`)
+func update(db *sql.DB, todoID int, todo CreateTodo) (*Todo, error) {
+	updateStmt := fmt.Sprintf(`UPDATE todo SET title = ?, status = ? WHERE id = ?`)
 
 	// Insert and get back newly created todo ID
-	if _, err := db.Exec(updateStmt); err != nil {
-		return "", fmt.Errorf("Failed to save to db: %s", err.Error())
+	if _, err := db.Exec(updateStmt, todo.Title, todo.Status, todoID); err != nil {
+		return nil, fmt.Errorf("Failed to save to db: %s", err.Error())
 	}
-
-	createdTodo, err := get(db, todoID)
-	if err != nil {
-		return "", err
-	}
-	return createdTodo.Status, nil
+	return get(db, todoID)
 }

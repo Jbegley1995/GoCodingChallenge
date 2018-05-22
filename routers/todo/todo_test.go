@@ -29,11 +29,11 @@ func TestList(t *testing.T) {
 //TestAPI A sequential test of api success.
 func TestAPI(t *testing.T) {
 	var (
-		err           error
-		updatedStatus string
-		todoToCreate  CreateTodo
-		todoToUpdate  CreateTodo
-		createdTodo   *Todo
+		err          error
+		todoToCreate CreateTodo
+		todoToUpdate CreateTodo
+		updatedTodo  *Todo
+		createdTodo  *Todo
 	)
 	if ctxt == nil {
 		t.Fatal("Context not set up properly.")
@@ -52,25 +52,18 @@ func TestAPI(t *testing.T) {
 		t.Errorf("Could not list todos: %s", err.Error())
 	}
 
-	//Should fail with status error
 	todoToUpdate = CreateTodo{
 		Title:  "Fizz",
-		Status: "Buzz",
+		Status: "In Progress",
 	}
 
-	_, err = update(db, createdTodo.ID, todoToUpdate)
-	if err == nil {
-		t.Error("Should've received an error about status.")
-	}
-
-	//Fix here
-	todoToUpdate.Status = "In Progress"
-	updatedStatus, err = update(db, createdTodo.ID, todoToUpdate)
+	updatedTodo, err = update(db, createdTodo.ID, todoToUpdate)
 	if err != nil {
-		t.Errorf("Error updating todo: %s", err.Error())
+		t.Errorf("Could not update todo: %s", err.Error())
 	}
-	if updatedStatus != todoToUpdate.Status {
-		t.Errorf("Read back the wrong status, wanted %s got %s", todoToUpdate.Status, updatedStatus)
+
+	if updatedTodo.Status != todoToUpdate.Status {
+		t.Errorf("Read back the wrong status, wanted %s got %s", todoToUpdate.Status, updatedTodo.Status)
 	}
 	_, err = get(db, createdTodo.ID)
 	if err != nil {

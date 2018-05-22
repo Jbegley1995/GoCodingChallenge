@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 //DatabaseConnectionSt Information to connect to the database.
@@ -17,6 +19,11 @@ type DatabaseConnectionSt struct {
 
 //Initialize intitializes database information to make it easy to use later.
 func (db *DatabaseConnectionSt) Initialize() error {
+	os.Setenv("DB_USER", "jesse")
+	os.Setenv("DB_HOST", "127.0.0.1:3306")
+	os.Setenv("DB_PASSWORD", "Password1!")
+	os.Setenv("DB_NAME", "sys")
+
 	dbUser := os.Getenv("DB_USER")
 	dbHost := os.Getenv("DB_HOST")
 	dbPassword := os.Getenv("DB_PASSWORD")
@@ -71,10 +78,10 @@ func (ctxt *Context) Initialize() error {
 
 //GetDB Gets the database through the context and it's environment.
 func (ctxt *Context) GetDB() (*sql.DB, error) {
-	dbinfo := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable",
-		ctxt.db.Host,
+	dbinfo := fmt.Sprintf("%s:%s@tcp(%s)/%s",
 		ctxt.db.User,
 		ctxt.db.Password,
+		ctxt.db.Host,
 		ctxt.db.Name)
-	return sql.Open("postgres", dbinfo)
+	return sql.Open("mysql", dbinfo)
 }
