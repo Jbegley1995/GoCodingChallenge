@@ -23,7 +23,18 @@ func (db *DatabaseConnectionSt) Initialize() error {
 	dbName := os.Getenv("DB_NAME")
 
 	//Check Environment variables here:
-
+	if dbUser == "" {
+		return fmt.Errorf("No DB_USER variable found in environment")
+	}
+	if dbHost == "" {
+		return fmt.Errorf("No DB_HOST variable found in environment")
+	}
+	if dbPassword == "" {
+		return fmt.Errorf("No DB_PASSWORD variable found in environment")
+	}
+	if dbName == "" {
+		return fmt.Errorf("No DB_NAME variable found in environment")
+	}
 	//--
 	db.User = dbUser
 	db.Host = dbHost
@@ -35,6 +46,15 @@ func (db *DatabaseConnectionSt) Initialize() error {
 //Context is the global context used to maintain an environment.
 type Context struct {
 	db DatabaseConnectionSt
+}
+
+//Testing returns a context appropriate for testing.
+func Testing() *Context {
+	ctxt := Context{}
+	if err := ctxt.Initialize(); err != nil {
+		return nil
+	}
+	return &ctxt
 }
 
 //Initialize intitializes context information to make it easy to use later.

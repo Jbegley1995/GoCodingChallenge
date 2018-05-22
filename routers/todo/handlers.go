@@ -13,16 +13,16 @@ import (
 
 const (
 	//APIKey the api key to access when fetching parameters from the URL.
-	APIKey = ":todoID"
+	APIKey = "todoID"
 )
 
 //Build builds out the routes relating to the todo API.
 func Build(router *web.Router) *web.Router {
 	return router.Subrouter(context.Context{}, "todos").
 		Get("", List).
-		Get(APIKey, Get).
+		Get(":"+APIKey, Get).
 		Post("", Create).
-		Put(APIKey, Update)
+		Put(":"+APIKey, Update)
 }
 
 // Create will allow a user to create a new todo
@@ -139,6 +139,7 @@ func List(ctxt *context.Context, w web.ResponseWriter, r *web.Request) {
 
 // Get will provide a todo based on the id passed.
 func Get(ctxt *context.Context, w web.ResponseWriter, r *web.Request) {
+	fmt.Println(r.PathParams)
 	todoID, err := strconv.Atoi(r.PathParams[APIKey])
 	if err != nil {
 		//return error

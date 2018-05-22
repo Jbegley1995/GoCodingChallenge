@@ -16,11 +16,11 @@ func main() {
 	router := web.New(context.Context{}).
 		Middleware(middleware.ContextSetup)
 
-	builtRouter := routers.Build(router)
+	routers.Build(router)
 
 	log.Println("Starting server...")
 
 	// Make sure you have DB_USER, DB_PASSWORD and DB_NAME environment variables set.
 	// We use them elsewhere
-	log.Fatal(http.ListenAndServe(":8080", builtRouter))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

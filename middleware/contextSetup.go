@@ -2,10 +2,10 @@
 package middleware
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/jbegley1995/GoCodingChallenge/context"
+	"github.com/jbegley1995/GoCodingChallenge/response"
 
 	"github.com/gocraft/web"
 )
@@ -14,12 +14,10 @@ import (
 func ContextSetup(ctxt *context.Context, w web.ResponseWriter, r *web.Request, next web.NextMiddlewareFunc) {
 	//just wanted to show that I understand the concept of middleware. Here is where I can setup user sessions
 	if err := ctxt.Initialize(); err != nil {
+		fmt.Println(err)
 		//looks like something wasn't setup properly, handle the error in some way, for this test scenario we're just going
 		//to print out an error.
-		badError := fmt.Sprintf("Environment not configured properly. \n Error: %s", err)
-		//normally I would have a type for errors, but i'm just going to use a small struct.
-		jsonResp, _ := json.Marshal(badError)
-		fmt.Fprintf(w, string(jsonResp))
+		response.InternalServerError(w, fmt.Errorf("environment not configured properly"))
 		return
 	}
 	next(w, r)
